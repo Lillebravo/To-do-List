@@ -3,8 +3,10 @@ const changeNameButton = document.querySelector("#changeName");
 const saveNameButton = document.querySelector("#saveName");
 const addButton = document.querySelector("#addButton");
 const list = document.querySelector(".listOfTasks");
+const tasksHeader = document.querySelector("#tasksHeader");
+const completedTasksHeader = document.querySelector("#completedTasksHeader");
+tasksHeader.style.display = "none";
 let selectedTask = null;
-let completedTasksHeader = document.querySelector("#completedTasksHeader");
 
 changeNameButton.addEventListener("click", () => {
   changeVisibleItems(changeNameButton, changeNameDiv);
@@ -44,7 +46,7 @@ function selectTask(taskWrapper) {
   }
 
   selectedTask = taskWrapper;
-  taskWrapper.querySelector("span:first-child").style.backgroundColor = "grey";
+  taskWrapper.querySelector("span:first-child").classList.add("selectedTask");
   taskWrapper.querySelector(".taskCompleted").style.display = "inline-block";
   taskWrapper.querySelector(".remove-task").style.display = "inline-block";
   taskWrapper.querySelector(".move-up-task").style.display = "inline-block";
@@ -55,6 +57,9 @@ function addNewTask() {
   const input = document.querySelector("#inputTask");
 
   if (isInputValid(input)) {
+    tasksHeader.style.display = "block";
+    list.style.display = "block";
+
     const newTask = document.createElement("li");
     const taskWrapper = document.createElement("div");
     taskWrapper.classList.add("task-wrapper");
@@ -78,6 +83,11 @@ function addNewTask() {
 function removeTask(taskWrapper) {
   taskWrapper.closest("li").remove();
   selectedTask = null;
+
+  if (list.children.length == 0) {
+    list.style.display = "none";
+    tasksHeader.style.display = "none";
+  }
 }
 
 function moveUpTask(taskWrapper) {
@@ -102,6 +112,7 @@ function completeTask(taskWrapper) {
   selectedTask = null;
   completedTasksHeader.style.display = "block";
   const completedTasksList = document.querySelector(".completedTasks");
+  completedTasksList.style.display = "block";
 
   const completedTask = document.createElement("li");
   completedTask.textContent = taskWrapper.querySelector("span").textContent;

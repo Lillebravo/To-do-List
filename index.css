@@ -4,11 +4,40 @@ html {
   font-family: "Roboto", serif;
 }
 
-body {
+.tasksContainer {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
+}
+
+.sideMenu {
+    margin-top: 20%;
+    margin-left: 10%;
+    gap: 20px;
+    position: fixed;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+
+    background-color: coral;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+button {
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 80%;
+}
+
+.inputTaskField {
+    display: flex;
+    flex-direction: row;
 }
 
 .inputNameField {
@@ -16,8 +45,6 @@ body {
 }
 
 .task-wrapper {
-    display: flex;
-    align-items: center;
     margin: 5px 0;
 }
 
@@ -26,14 +53,53 @@ body {
     cursor: pointer;
 }
 
-.material-symbols-outlined {
+.material-symbols-outlined, .taskCompleted{
     cursor: pointer;
 }
 
 ul {
-    background-color: green;
+    display: none;
+    background-color: rgb(116, 243, 116);
+    color: black;
+    border-radius: 10px;
+    min-height: 200px;
+    min-width: 400px;
+    padding: 20px;
+}
+
+ol {
+    display: none;
+    background-color: rgb(109, 201, 208);
+    border-radius: 10px;
+    min-height: 200px;
+    min-width: 400px;
+    padding: 20px;
+}
+
+li {
+    min-width: 300px;
+   background-color: white; 
+   border-radius: 3px;
+   padding: 5px;
+}
+
+ul li {
+    text-decoration: line-through;
 }
 
 #completedTasksHeader {
     display: none;
+}
+
+.selectedTask {
+    animation: enlarge 2s ease-in-out forwards; /* 2s duration, ease-in-out timing */
+}
+
+@keyframes enlarge {
+    0% {
+        transform: scale(1); /* Initial size */
+    }
+    100% {
+        transform: scale(1.2); /* 20% bigger */
+    }
 }
