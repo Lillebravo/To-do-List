@@ -3,3 +3,14 @@
 html {
   font-family: "Roboto", serif;
 }
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.inputNameField {
+    display: none;
+}
