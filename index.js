@@ -6,26 +6,16 @@ const addButton = document.querySelector("#addButton");
 const list = document.querySelector(".listOfTasks");
 const tasksHeader = document.querySelector("#tasksHeader");
 const completedTasksHeader = document.querySelector("#completedTasksHeader");
+
 tasksHeader.style.display = "none";
 let selectedTask = null;
-ownerName.innerHTML = localStorage.getItem("ownerName") || null;
-
-changeNameButton.addEventListener("click", () => {
-  changeVisibleItems(changeNameButton, changeNameDiv);
-});
-
-saveNameButton.addEventListener("click", () => {
-  setNewName();
-});
-
-addButton.addEventListener("click", () => {
-  addNewTask();
-});
 
 class Task {
-  constructor(text) {
+  constructor(text, timestamp = Date.now()) {
     this.text = text;
+    this.timestamp = timestamp;
     this.element = this.createTaskElement();
+    this.author = ownerName;
   }
 
   createTaskElement() {
@@ -53,7 +43,7 @@ class Task {
 
     const removeButton = document.createElement("span");
     removeButton.classList.add("material-symbols-outlined", "remove-task");
-    removeButton.textContent = "remove";
+    removeButton.textContent = "delete";
     removeButton.style.display = "none";
     removeButton.style.color = "red";
 
@@ -105,40 +95,38 @@ class Task {
   }
 
   removeTask(taskWrapper) {
-    const list = document.querySelector(".listOfTasks");
     taskWrapper.closest("li").remove();
 
     if (list.children.length === 0) {
       list.style.display = "none";
       document.querySelector("#tasksHeader").style.display = "none";
     }
+    saveTasks();
   }
 
   moveUpTask(taskWrapper) {
-    const list = document.querySelector(".listOfTasks");
     const currentLi = taskWrapper.closest("li");
     const previousLi = currentLi.previousElementSibling;
 
     if (previousLi) {
       list.insertBefore(currentLi, previousLi);
     }
+
+    saveTasks();
   }
 
   moveDownTask(taskWrapper) {
-    const list = document.querySelector(".listOfTasks");
     const currentLi = taskWrapper.closest("li");
     const nextLi = currentLi.nextElementSibling;
 
     if (nextLi) {
       list.insertBefore(nextLi, currentLi);
     }
+    saveTasks();
   }
 
   completeTask(taskWrapper) {
     const completedTasksList = document.querySelector(".completedTasks");
-    const completedTasksHeader = document.querySelector(
-      "#completedTasksHeader"
-    );
 
     completedTasksHeader.style.display = "block";
     completedTasksList.style.display = "block";
@@ -148,6 +136,42 @@ class Task {
     completedTasksList.appendChild(completedTask);
 
     this.removeTask(taskWrapper);
+    saveTasks();
+  }
+}
+
+changeNameButton.addEventListener("click", () => {
+  changeVisibleItems(changeNameButton, changeNameDiv);
+});
+
+saveNameButton.addEventListener("click", () => {
+  setNewName();
+});
+
+addButton.addEventListener("click", () => {
+  addNewTask();
+});
+
+function saveTasks() {
+  const tasks = Array.from(list.children).map(li => {
+    const taskText = li.querySelector(".task-wrapper span:first-child").textContent;
+    return { text: taskText, timestamp: Date.now(), author: ownerName.innerHTML };
+  });
+  localStorage.setItem("todos", JSON.stringify(tasks));
+}
+
+function loadData() {
+  ownerName.innerHTML = localStorage.getItem("ownerName") || "No-one";
+  const storedTasks = JSON.parse(localStorage.getItem("todos") || "[]");
+  
+  if (storedTasks.length > 0) {
+    tasksHeader.style.display = "block";
+    list.style.display = "block";
+
+    storedTasks.forEach(taskData => {
+      const task = new Task(taskData.text, taskData.timestamp, taskData.author);
+      list.appendChild(task.element);
+    });
   }
 }
 
@@ -155,15 +179,14 @@ function addNewTask() {
   const input = document.querySelector("#inputTask");
 
   if (isInputValid(input)) {
-    const tasksHeader = document.querySelector("#tasksHeader");
-    const list = document.querySelector(".listOfTasks");
-
     tasksHeader.style.display = "block";
     list.style.display = "block";
 
     const newTask = new Task(input.value);
     list.appendChild(newTask.element);
     input.value = "";
+
+    saveTasks(); // Save tasks to local storage
   } else {
     alert("You haven't written any task");
   }
@@ -185,36 +208,11 @@ function setNewName() {
   }
 }
 
-function selectTask(taskWrapper) {
-  if (selectedTask) {
-    selectedTask
-      .querySelector("span:first-child")
-      .classList.remove("selectedTask");
-    selectedTask.querySelector(".remove-task").style.display = "none";
-    selectedTask.querySelector(".move-up-task").style.display = "none";
-    selectedTask.querySelector(".move-down-task").style.display = "none";
-    selectedTask.querySelector(".taskCompleted").style.display = "none";
-  }
-
-  selectedTask = taskWrapper;
-  taskWrapper.querySelector("span:first-child").classList.add("selectedTask");
-  taskWrapper.querySelector(".taskCompleted").style.display = "inline-block";
-  taskWrapper.querySelector(".remove-task").style.display = "inline-block";
-  taskWrapper.querySelector(".move-up-task").style.display = "inline-block";
-  taskWrapper.querySelector(".move-down-task").style.display = "inline-block";
-}
-
 function isInputValid(input) {
   return input.value.trim() !== "";
 }
 
-/* function initialiseProgram() {
-
-}
-
-initialiseProgram(); */
-
-// Store the todos in local storage
+document.addEventListener('DOMContentLoaded', loadData);
 
 // An author and timestamp should be visible on every todo.
 
