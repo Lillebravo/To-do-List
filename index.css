@@ -115,13 +115,13 @@ button:active {
     transition: background-color 0.3s ease;
 }
 
-.material-symbols-outlined span {
+.material-symbols-outlined {
     cursor: pointer;
     transition: all 0.3s ease;
     opacity: 0.7;
 }
 
-.material-symbols-outlined span:hover {
+.material-symbols-outlined:hover {
     opacity: 1;
     transform: scale(1.1);
 }
@@ -138,7 +138,7 @@ ul, ol {
 }
 
 ul li::marker {
-    font-family: 'Material Symbols Outlined' !important;
+    font-family: 'Material Symbols Outlined';
     list-style-type:none;
     content: "check";
 }
