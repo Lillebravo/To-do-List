@@ -14,3 +14,18 @@ body {
 .inputNameField {
     display: none;
 }
+
+.task-wrapper {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.task-wrapper span:first-child {
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.material-symbols-outlined {
+    cursor: pointer;
+}

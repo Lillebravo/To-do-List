@@ -11,21 +11,19 @@
     />
   </head>
   <body>
-    <input type="button" class="material-symbols-outlined" value="add" />
+    <h1><span id="ownerName">Jerry</span>'s to-do list</h1>
 
-    <h1><span id="ownerName"></span>´s to-do list</h1>
+    <button id="changeName">Change Name</button>
+
     <div class="inputNameField">
-      <label for="name">Name: </label>
-      <input type="name" name="name" id="inputName" />
-      <input type="button" value="save name" id="saveName">
+        <input type="text" id="inputName" placeholder="Enter new name">
+        <button id="saveName">Save Name</button>
     </div>
-    <input type="button" value="change name" id="changeName" />
 
     <h2>Add items:</h2>
-    <form>
-      <input type="text" id="inputTask" />
-      <input type="button" value="add task" id="addButton" />
-    </form>
+    <input type="text" id="inputTask" placeholder="Enter a task">
+    <button id="addButton">Add Task</button>
+
     <ol class="listOfTasks"></ol>
 
     <script src="index.js"></script>
