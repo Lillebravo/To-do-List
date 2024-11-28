@@ -32,7 +32,6 @@ body {
 
 ul {
     background-color: green;
-    cursor: not-allowed;
 }
 
 #completedTasksHeader {

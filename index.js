@@ -100,22 +100,11 @@ function moveDownTask(taskWrapper) {
 
 function completeTask(taskWrapper) {
   selectedTask = null;
+  completedTasksHeader.style.display = "block";
   const completedTasksList = document.querySelector(".completedTasks");
 
-  if (completedTasksHeader !== null) {
-    completedTasksHeader.style.display = "block";
-  }
-
-  for (let i = 0; i < taskWrapper.children.length; i++) {
-    taskWrapper.removeChild(
-      taskWrapper.querySelector(".material-symbols-outlined")
-    );
-  }
-  taskWrapper.removeChild(taskWrapper.querySelector("input"));
-
-  const currentLi = taskWrapper.querySelector("span").textContent;
   const completedTask = document.createElement("li");
-  completedTask.textContent = currentLi;
+  completedTask.textContent = taskWrapper.querySelector("span").textContent;
   completedTasksList.appendChild(completedTask);
   removeTask(taskWrapper);
 }
