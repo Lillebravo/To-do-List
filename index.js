@@ -4,6 +4,7 @@ const saveNameButton = document.querySelector("#saveName");
 const addButton = document.querySelector("#addButton");
 const list = document.querySelector(".listOfTasks");
 let selectedTask = null;
+let completedTasksHeader = document.querySelector("#completedTasksHeader");
 
 changeNameButton.addEventListener("click", () => {
   changeVisibleItems(changeNameButton, changeNameDiv);
@@ -33,30 +34,6 @@ function setNewName() {
   }
 }
 
-function addNewTask() {
-  const input = document.querySelector("#inputTask");
-
-  if (isInputValid(input)) {
-    const newTask = document.createElement("li");
-    const taskWrapper = document.createElement("div");
-    taskWrapper.classList.add("task-wrapper");
-
-    const taskText = document.createElement("span");
-    taskText.textContent = input.value;
-    taskWrapper.appendChild(taskText);
-    
-    addOperatingButtons(taskWrapper);
-    
-    taskText.addEventListener("click", () => selectTask(taskWrapper));
-
-    newTask.appendChild(taskWrapper);
-    list.appendChild(newTask);
-    input.value = "";
-  } else {
-    alert("You haven't written any task");
-  }
-}
-
 function selectTask(taskWrapper) {
   if (selectedTask) {
     selectedTask.querySelector("span:first-child").style.backgroundColor = "";
@@ -74,6 +51,30 @@ function selectTask(taskWrapper) {
   taskWrapper.querySelector(".move-down-task").style.display = "inline-block";
 }
 
+function addNewTask() {
+  const input = document.querySelector("#inputTask");
+
+  if (isInputValid(input)) {
+    const newTask = document.createElement("li");
+    const taskWrapper = document.createElement("div");
+    taskWrapper.classList.add("task-wrapper");
+
+    const taskText = document.createElement("span");
+    taskText.textContent = input.value;
+    taskWrapper.appendChild(taskText);
+
+    addOperatingButtons(taskWrapper);
+
+    taskText.addEventListener("click", () => selectTask(taskWrapper));
+
+    newTask.appendChild(taskWrapper);
+    list.appendChild(newTask);
+    input.value = "";
+  } else {
+    alert("You haven't written any task");
+  }
+}
+
 function removeTask(taskWrapper) {
   taskWrapper.closest("li").remove();
   selectedTask = null;
@@ -82,7 +83,7 @@ function removeTask(taskWrapper) {
 function moveUpTask(taskWrapper) {
   const currentLi = taskWrapper.closest("li");
   const previousLi = currentLi.previousElementSibling;
-  
+
   if (previousLi) {
     list.insertBefore(currentLi, previousLi);
   }
@@ -91,42 +92,65 @@ function moveUpTask(taskWrapper) {
 function moveDownTask(taskWrapper) {
   const currentLi = taskWrapper.closest("li");
   const nextLi = currentLi.nextElementSibling;
-  
+
   if (nextLi) {
     list.insertBefore(nextLi, currentLi);
   }
 }
 
+function completeTask(taskWrapper) {
+  selectedTask = null;
+  const completedTasksList = document.querySelector(".completedTasks");
+
+  if (completedTasksHeader !== null) {
+    completedTasksHeader.style.display = "block";
+  }
+
+  for (let i = 0; i < taskWrapper.children.length; i++) {
+    taskWrapper.removeChild(
+      taskWrapper.querySelector(".material-symbols-outlined")
+    );
+  }
+  taskWrapper.removeChild(taskWrapper.querySelector("input"));
+
+  const currentLi = taskWrapper.querySelector("span").textContent;
+  const completedTask = document.createElement("li");
+  completedTask.textContent = currentLi;
+  completedTasksList.appendChild(completedTask);
+  removeTask(taskWrapper);
+}
+
 function addOperatingButtons(taskWrapper) {
-    const checkBox = document.createElement("input");
-    checkBox.setAttribute("type", "checkbox");
-    checkBox.classList.add("taskCompleted");
-    checkBox.style.display = "none";
+  const checkBox = document.createElement("input");
+  checkBox.setAttribute("type", "checkbox");
+  checkBox.classList.add("taskCompleted");
+  checkBox.style.display = "none";
 
-    const removeButton = document.createElement("span");
-    removeButton.classList.add("material-symbols-outlined", "remove-task");
-    removeButton.textContent = "remove";
-    removeButton.style.display = "none";
-    removeButton.style.color = "red";
+  const removeButton = document.createElement("span");
+  removeButton.classList.add("material-symbols-outlined", "remove-task");
+  removeButton.textContent = "remove";
+  removeButton.style.display = "none";
+  removeButton.style.color = "red";
 
-    const moveUpButton = document.createElement("span");
-    moveUpButton.classList.add("material-symbols-outlined", "move-up-task");
-    moveUpButton.textContent = "arrow_upward";
-    moveUpButton.style.display = "none";
+  const moveUpButton = document.createElement("span");
+  moveUpButton.classList.add("material-symbols-outlined", "move-up-task");
+  moveUpButton.textContent = "arrow_upward";
+  moveUpButton.style.display = "none";
 
-    const moveDownButton = document.createElement("span");
-    moveDownButton.classList.add("material-symbols-outlined", "move-down-task");
-    moveDownButton.textContent = "arrow_downward";
-    moveDownButton.style.display = "none";
+  const moveDownButton = document.createElement("span");
+  moveDownButton.classList.add("material-symbols-outlined", "move-down-task");
+  moveDownButton.textContent = "arrow_downward";
+  moveDownButton.style.display = "none";
 
-    taskWrapper.appendChild(checkBox);
-    taskWrapper.appendChild(removeButton);
-    taskWrapper.appendChild(moveUpButton);
-    taskWrapper.appendChild(moveDownButton);
+  taskWrapper.appendChild(checkBox);
+  taskWrapper.appendChild(removeButton);
+  taskWrapper.appendChild(moveUpButton);
+  taskWrapper.appendChild(moveDownButton);
 
-    removeButton.addEventListener("click", () => removeTask(taskWrapper));
-    moveUpButton.addEventListener("click", () => moveUpTask(taskWrapper));
-    moveDownButton.addEventListener("click", () => moveDownTask(taskWrapper));
+  checkBox.addEventListener("click", () => completeTask(taskWrapper));
+  removeButton.addEventListener("click", () => removeTask(taskWrapper));
+  moveUpButton.addEventListener("click", () => moveUpTask(taskWrapper));
+  moveDownButton.addEventListener("click", () => moveDownTask(taskWrapper));
 }
 
 function isInputValid(input) {

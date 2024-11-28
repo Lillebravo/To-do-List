@@ -29,3 +29,12 @@ body {
 .material-symbols-outlined {
     cursor: pointer;
 }
+
+ul {
+    background-color: green;
+    cursor: not-allowed;
+}
+
+#completedTasksHeader {
+    display: none;
+}

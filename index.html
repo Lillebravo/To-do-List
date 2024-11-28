@@ -11,20 +11,22 @@
     />
   </head>
   <body>
-    <h1><span id="ownerName">Jerry</span>'s to-do list</h1>
-
     <button id="changeName">Change Name</button>
+    <h1><span id="ownerName">Jerry</span>'s to-do list</h1>
 
     <div class="inputNameField">
         <input type="text" id="inputName" placeholder="Enter new name">
         <button id="saveName">Save Name</button>
     </div>
 
-    <h2>Add items:</h2>
     <input type="text" id="inputTask" placeholder="Enter a task">
     <button id="addButton">Add Task</button>
+    <h2>Things to do:</h2>
 
     <ol class="listOfTasks"></ol>
+
+    <h2 id="completedTasksHeader">Completed Tasks:</h2>
+    <ul class="completedTasks"></ul>
 
     <script src="index.js"></script>
   </body>
