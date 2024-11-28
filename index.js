@@ -49,7 +49,8 @@ function addNewTask() {
     
     taskText.addEventListener("click", () => selectTask(taskWrapper));
 
-    list.appendChild(taskWrapper);
+    newTask.appendChild(taskWrapper);
+    list.appendChild(newTask);
     input.value = "";
   } else {
     alert("You haven't written any task");
@@ -60,29 +61,48 @@ function selectTask(taskWrapper) {
   if (selectedTask) {
     selectedTask.querySelector("span:first-child").style.backgroundColor = "";
     selectedTask.querySelector(".remove-task").style.display = "none";
+    selectedTask.querySelector(".move-up-task").style.display = "none";
+    selectedTask.querySelector(".move-down-task").style.display = "none";
+    selectedTask.querySelector(".taskCompleted").style.display = "none";
   }
 
   selectedTask = taskWrapper;
   taskWrapper.querySelector("span:first-child").style.backgroundColor = "grey";
+  taskWrapper.querySelector(".taskCompleted").style.display = "inline-block";
   taskWrapper.querySelector(".remove-task").style.display = "inline-block";
   taskWrapper.querySelector(".move-up-task").style.display = "inline-block";
   taskWrapper.querySelector(".move-down-task").style.display = "inline-block";
 }
 
 function removeTask(taskWrapper) {
-  taskWrapper.remove();
+  taskWrapper.closest("li").remove();
   selectedTask = null;
 }
 
-function moveUpTask() {
-
+function moveUpTask(taskWrapper) {
+  const currentLi = taskWrapper.closest("li");
+  const previousLi = currentLi.previousElementSibling;
+  
+  if (previousLi) {
+    list.insertBefore(currentLi, previousLi);
+  }
 }
 
-function moveDownTask() {
-
+function moveDownTask(taskWrapper) {
+  const currentLi = taskWrapper.closest("li");
+  const nextLi = currentLi.nextElementSibling;
+  
+  if (nextLi) {
+    list.insertBefore(nextLi, currentLi);
+  }
 }
 
 function addOperatingButtons(taskWrapper) {
+    const checkBox = document.createElement("input");
+    checkBox.setAttribute("type", "checkbox");
+    checkBox.classList.add("taskCompleted");
+    checkBox.style.display = "none";
+
     const removeButton = document.createElement("span");
     removeButton.classList.add("material-symbols-outlined", "remove-task");
     removeButton.textContent = "remove";
@@ -99,13 +119,14 @@ function addOperatingButtons(taskWrapper) {
     moveDownButton.textContent = "arrow_downward";
     moveDownButton.style.display = "none";
 
+    taskWrapper.appendChild(checkBox);
     taskWrapper.appendChild(removeButton);
     taskWrapper.appendChild(moveUpButton);
     taskWrapper.appendChild(moveDownButton);
 
     removeButton.addEventListener("click", () => removeTask(taskWrapper));
-    moveUpButton.addEventListener("click", () => moveUpTask());
-    moveDownButton.addEventListener("click", () => moveDownTask());
+    moveUpButton.addEventListener("click", () => moveUpTask(taskWrapper));
+    moveDownButton.addEventListener("click", () => moveDownTask(taskWrapper));
 }
 
 function isInputValid(input) {
