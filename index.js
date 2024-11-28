@@ -38,7 +38,7 @@ function setNewName() {
 
 function selectTask(taskWrapper) {
   if (selectedTask) {
-    selectedTask.querySelector("span:first-child").style.backgroundColor = "";
+    selectedTask.querySelector("span:first-child").classList.remove("selectedTask");
     selectedTask.querySelector(".remove-task").style.display = "none";
     selectedTask.querySelector(".move-up-task").style.display = "none";
     selectedTask.querySelector(".move-down-task").style.display = "none";
@@ -156,3 +156,11 @@ function addOperatingButtons(taskWrapper) {
 function isInputValid(input) {
   return input.value.trim() !== "";
 }
+
+// Store the todos in local storage
+
+// An author and timestamp should be visible on every todo.
+
+// You should be able to edit a todo in place.
+
+// You should be able to sort the todos after timestamp or author. Timestamp should be the default sorting.
