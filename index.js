@@ -167,16 +167,19 @@ class Task {
   editTask(taskWrapper) {
     let newTaskSpan = taskWrapper.querySelector("span");
     let newTaskText = prompt("What should the task be changed to?");
+    if (isInputValid(newTaskText) && !isInputDuplicate(newTaskText)) {
+      this.text = newTaskText;
+      this.author = ownerName.innerHTML;
+      this.timestamp = Date.now();
 
-    this.text = newTaskText;
-    this.author = ownerName.innerHTML;
-    this.timestamp = Date.now();
-    
-    newTaskSpan.textContent = `${this.text} , By ${
-      this.author
-    } on ${this.formatTimestamp()}`;
-    
-    saveTasks();
+      newTaskSpan.textContent = `${this.text} , By ${
+        this.author
+      } on ${this.formatTimestamp()}`;
+
+      saveTasks();
+    } else if (isInputDuplicate(newTaskText)) {
+      alert("That task already exists");
+    }
   }
 
   moveUpTask(taskWrapper) {
@@ -241,7 +244,7 @@ function loadData() {
 function addNewTask() {
   const input = document.querySelector("#inputTask");
 
-  if (isInputValid(input)) {
+  if (isInputValid(input) && !isInputDuplicate(input)) {
     tasksHeader.style.display = "block";
     list.style.display = "block";
 
@@ -250,8 +253,9 @@ function addNewTask() {
     input.value = "";
 
     saveTasks(); // Save tasks to local storage
-  } else {
-    alert("You haven't written any task");
+  } else if (isInputDuplicate(input)) {
+    input.value = "";
+    alert("That task already exists");
   }
 }
 
@@ -265,8 +269,12 @@ function sortTasks() {
   }
 
   tasks.sort((a, b) => {
-    const taskAText = a.querySelector(".task-wrapper span:first-child").textContent;
-    const taskBText = b.querySelector(".task-wrapper span:first-child").textContent;
+    const taskAText = a.querySelector(
+      ".task-wrapper span:first-child"
+    ).textContent;
+    const taskBText = b.querySelector(
+      ".task-wrapper span:first-child"
+    ).textContent;
 
     if (selectedSort.value === "timeStamp") {
       // Extract timestamp string and parse it
@@ -274,8 +282,8 @@ function sortTasks() {
       const timestampBStr = taskBText.split(" on ")[1];
 
       // Replace '.' with ':' to match the date format
-      const timestampA = new Date(timestampAStr.replace('.', ':'));
-      const timestampB = new Date(timestampBStr.replace('.', ':'));
+      const timestampA = new Date(timestampAStr.replace(".", ":"));
+      const timestampB = new Date(timestampBStr.replace(".", ":"));
 
       return timestampA - timestampB;
     } else if (selectedSort.value === "author") {
@@ -291,7 +299,7 @@ function sortTasks() {
   }
 
   // Add the newly sorted tasks to the list
-  tasks.forEach(task => list.appendChild(task));
+  tasks.forEach((task) => list.appendChild(task));
 
   saveTasks();
 }
@@ -304,7 +312,11 @@ function changeVisibleItems(itemCurrentlyVisible, itemToMakeVisible) {
 function setNewName() {
   const inputName = document.querySelector("#inputName");
 
-  if (isInputValid(inputName)) {
+  if (inputName.value === ownerName.innerHTML) {
+    alert("That is the same name!");
+    inputName.value = "";
+    changeVisibleItems(changeNameDiv, changeNameButton);
+  } else if (isInputValid(inputName)) {
     ownerName.innerHTML = inputName.value;
     localStorage.setItem("ownerName", ownerName.innerHTML);
     inputName.value = "";
@@ -313,5 +325,59 @@ function setNewName() {
 }
 
 function isInputValid(input) {
-  return input.value.trim() !== "";
+  let isValid = true;
+
+  for (let i = 0; i < list.children.length; i++) {
+    const element = list.children[i];
+
+    if (input instanceof HTMLElement) {
+      if (input.value === "" || input.value === null) {
+        isValid = false;
+        alert("You didn´t write anything");
+        break;
+      }
+    } else {
+      if (input === "" || input === null) {
+        isValid = false;
+        alert("You didn´t write anything");
+        break;
+      }
+    }
+  }
+
+  return isValid;
+}
+
+function isInputDuplicate(input) {
+  let isDuplicate = false;
+
+  for (let i = 0; i < list.children.length; i++) {
+    const element = list.children[i];
+
+    if (input instanceof HTMLElement) {
+      if (
+        input.value.trim() ===
+        element
+          .querySelector("span:first-child")
+          .textContent.split(" , By ")[0]
+          .trim()
+      ) {
+        isDuplicate = true;
+        break;
+      }
+    } else {
+      if (
+        input.trim() ===
+        element
+          .querySelector("span:first-child")
+          .textContent.split(" , By ")[0]
+          .trim()
+      ) {
+        isDuplicate = true;
+        break;
+      }
+    }
+  }
+
+  return isDuplicate;
 }
