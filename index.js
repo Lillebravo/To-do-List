@@ -381,3 +381,5 @@ function isInputDuplicate(input) {
 
   return isDuplicate;
 }
+
+// Still need to fix the tooltip 
