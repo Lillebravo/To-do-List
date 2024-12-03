@@ -1,3 +1,4 @@
+//Declarations
 let ownerName = document.querySelector("#ownerName");
 const changeNameDiv = document.querySelector(".inputNameField");
 const changeNameButton = document.querySelector("#changeName");
@@ -10,12 +11,33 @@ const completedTasksHeader = document.querySelector("#completedTasksHeader");
 tasksHeader.style.display = "none";
 let selectedTask = null;
 
+// Event Listeners
+changeNameButton.addEventListener("click", () => {
+  changeVisibleItems(changeNameButton, changeNameDiv);
+});
+
+saveNameButton.addEventListener("click", () => {
+  setNewName();
+});
+
+addButton.addEventListener("click", () => {
+  addNewTask();
+});
+
+document.addEventListener('DOMContentLoaded', loadData);
+
+// Classes and Functions
 class Task {
-  constructor(text, timestamp = Date.now()) {
+  constructor(text, timestamp = Date.now(), author = null) {
     this.text = text;
     this.timestamp = timestamp;
+    this.author = author || ownerName.innerHTML;
     this.element = this.createTaskElement();
-    this.author = ownerName;
+  }
+
+  formatTimestamp() {
+    const date = new Date(this.timestamp);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}, ${String(date.getHours()).padStart(2, '0')}.${String(date.getMinutes()).padStart(2, '0')}`;
   }
 
   createTaskElement() {
@@ -24,7 +46,8 @@ class Task {
     taskWrapper.classList.add("task-wrapper");
 
     const taskText = document.createElement("span");
-    taskText.textContent = this.text;
+    const formattedTaskText = `${this.text} , By ${this.author} on ${this.formatTimestamp()}`;
+    taskText.textContent = formattedTaskText;
     taskWrapper.appendChild(taskText);
 
     this.addOperatingButtons(taskWrapper);
@@ -134,28 +157,24 @@ class Task {
     const completedTask = document.createElement("li");
     completedTask.textContent = taskWrapper.querySelector("span").textContent;
     completedTasksList.appendChild(completedTask);
-
+    
     this.removeTask(taskWrapper);
     saveTasks();
   }
 }
 
-changeNameButton.addEventListener("click", () => {
-  changeVisibleItems(changeNameButton, changeNameDiv);
-});
-
-saveNameButton.addEventListener("click", () => {
-  setNewName();
-});
-
-addButton.addEventListener("click", () => {
-  addNewTask();
-});
-
 function saveTasks() {
-  const tasks = Array.from(list.children).map(li => {
+  const tasks = Array.from(list.children).map((li) => {
     const taskText = li.querySelector(".task-wrapper span:first-child").textContent;
-    return { text: taskText, timestamp: Date.now(), author: ownerName.innerHTML };
+    // Extract the original text and author from the displayed text
+    const [originalText, authorInfo] = taskText.split(' , By ');
+    const author = authorInfo.split(' on ')[0];
+    
+    return { 
+      text: originalText, 
+      timestamp: Date.now(), 
+      author: author // Use the original author from the task
+    };
   });
   localStorage.setItem("todos", JSON.stringify(tasks));
 }
@@ -211,8 +230,6 @@ function setNewName() {
 function isInputValid(input) {
   return input.value.trim() !== "";
 }
-
-document.addEventListener('DOMContentLoaded', loadData);
 
 // An author and timestamp should be visible on every todo.
 
