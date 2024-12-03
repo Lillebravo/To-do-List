@@ -7,6 +7,7 @@ const addButton = document.querySelector("#addButton");
 const list = document.querySelector(".listOfTasks");
 const tasksHeader = document.querySelector("#tasksHeader");
 const completedTasksHeader = document.querySelector("#completedTasksHeader");
+const sortButton = document.querySelector("#sortButton");
 
 tasksHeader.style.display = "none";
 let selectedTask = null;
@@ -23,6 +24,8 @@ saveNameButton.addEventListener("click", () => {
 addButton.addEventListener("click", () => {
   addNewTask();
 });
+
+sortButton.addEventListener("click", () => sortTasks());
 
 document.addEventListener("DOMContentLoaded", loadData);
 
@@ -251,6 +254,47 @@ function addNewTask() {
   }
 }
 
+function sortTasks() {
+  const selectedSort = document.querySelector("#sortSelector");
+  const tasks = Array.from(list.children);
+
+  if (selectedSort.value === "selectSort") {
+    alert("You have to select a sorting method");
+    return;
+  }
+
+  tasks.sort((a, b) => {
+    const taskAText = a.querySelector(".task-wrapper span:first-child").textContent;
+    const taskBText = b.querySelector(".task-wrapper span:first-child").textContent;
+
+    if (selectedSort.value === "timeStamp") {
+      // Extract timestamp string and parse it
+      const timestampAStr = taskAText.split(" on ")[1];
+      const timestampBStr = taskBText.split(" on ")[1];
+
+      // Replace '.' with ':' to match the date format
+      const timestampA = new Date(timestampAStr.replace('.', ':'));
+      const timestampB = new Date(timestampBStr.replace('.', ':'));
+
+      return timestampA - timestampB;
+    } else if (selectedSort.value === "author") {
+      const authorA = taskAText.split(" , By ")[1].split(" on ")[0];
+      const authorB = taskBText.split(" , By ")[1].split(" on ")[0];
+      return authorA.localeCompare(authorB);
+    }
+  });
+
+  // Clear the current list
+  while (list.firstChild) {
+    list.removeChild(list.firstChild);
+  }
+
+  // Add the newly sorted tasks to the list
+  tasks.forEach(task => list.appendChild(task));
+
+  saveTasks();
+}
+
 function changeVisibleItems(itemCurrentlyVisible, itemToMakeVisible) {
   itemCurrentlyVisible.style.display = "none";
   itemToMakeVisible.style.display = "block";
@@ -270,5 +314,3 @@ function setNewName() {
 function isInputValid(input) {
   return input.value.trim() !== "";
 }
-
-// You should be able to sort the todos after timestamp or author. Timestamp should be the default sorting.
