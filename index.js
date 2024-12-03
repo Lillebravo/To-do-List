@@ -24,7 +24,7 @@ addButton.addEventListener("click", () => {
   addNewTask();
 });
 
-document.addEventListener('DOMContentLoaded', loadData);
+document.addEventListener("DOMContentLoaded", loadData);
 
 // Classes and methods
 class Task {
@@ -37,7 +37,12 @@ class Task {
 
   formatTimestamp() {
     const date = new Date(this.timestamp);
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}, ${String(date.getHours()).padStart(2, '0')}.${String(date.getMinutes()).padStart(2, '0')}`;
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(date.getDate()).padStart(2, "0")}, ${String(
+      date.getHours()
+    ).padStart(2, "0")}.${String(date.getMinutes()).padStart(2, "0")}`;
   }
 
   createTaskElement() {
@@ -46,7 +51,9 @@ class Task {
     taskWrapper.classList.add("task-wrapper");
 
     const taskText = document.createElement("span");
-    const formattedTaskText = `${this.text} , By ${this.author} on ${this.formatTimestamp()}`;
+    const formattedTaskText = `${this.text} , By ${
+      this.author
+    } on ${this.formatTimestamp()}`;
     taskText.textContent = formattedTaskText;
     taskWrapper.appendChild(taskText);
 
@@ -98,7 +105,7 @@ class Task {
 
     checkBox.addEventListener("click", () => this.completeTask(taskWrapper));
     removeButton.addEventListener("click", () => this.removeTask(taskWrapper));
-    editButton.addEventListener("click", this.editTask(taskWrapper));
+    editButton.addEventListener("click", () => this.editTask(taskWrapper));
     moveUpButton.addEventListener("click", () => this.moveUpTask(taskWrapper));
     moveDownButton.addEventListener("click", () =>
       this.moveDownTask(taskWrapper)
@@ -138,7 +145,7 @@ class Task {
     const completedTask = document.createElement("li");
     completedTask.textContent = taskWrapper.querySelector("span").textContent;
     completedTasksList.appendChild(completedTask);
-    
+
     this.removeTask(taskWrapper);
     saveTasks();
   }
@@ -154,7 +161,18 @@ class Task {
   }
 
   editTask(taskWrapper) {
+    let newTaskSpan = taskWrapper.querySelector("span");
+    let newTaskText = prompt("What should the task be changed to?");
+
+    this.text = newTaskText;
+    this.author = ownerName.innerHTML;
+    this.timestamp = Date.now();
     
+    newTaskSpan.textContent = `${this.text} , By ${
+      this.author
+    } on ${this.formatTimestamp()}`;
+    
+    saveTasks();
   }
 
   moveUpTask(taskWrapper) {
@@ -182,16 +200,20 @@ class Task {
 // Functions
 function saveTasks() {
   const tasks = Array.from(list.children).map((li) => {
-    const taskText = li.querySelector(".task-wrapper span:first-child").textContent;
-    const [originalText, authorInfo] = taskText.split(' , By ');
-    const [author, timestampText] = authorInfo.split(' on ');
-    
-    const originalTimestamp = new Date(timestampText.replace('.', ':')).getTime();
-    
-    return { 
-      text: originalText, 
+    const taskText = li.querySelector(
+      ".task-wrapper span:first-child"
+    ).textContent;
+    const [originalText, authorInfo] = taskText.split(" , By ");
+    const [author, timestampText] = authorInfo.split(" on ");
+
+    const originalTimestamp = new Date(
+      timestampText.replace(".", ":")
+    ).getTime();
+
+    return {
+      text: originalText,
       timestamp: originalTimestamp,
-      author: author
+      author: author,
     };
   });
   localStorage.setItem("todos", JSON.stringify(tasks));
@@ -200,12 +222,12 @@ function saveTasks() {
 function loadData() {
   ownerName.innerHTML = localStorage.getItem("ownerName") || "No-one";
   const storedTasks = JSON.parse(localStorage.getItem("todos") || "[]");
-  
+
   if (storedTasks.length > 0) {
     tasksHeader.style.display = "block";
     list.style.display = "block";
 
-    storedTasks.forEach(taskData => {
+    storedTasks.forEach((taskData) => {
       const task = new Task(taskData.text, taskData.timestamp, taskData.author);
       list.appendChild(task.element);
     });
@@ -248,7 +270,5 @@ function setNewName() {
 function isInputValid(input) {
   return input.value.trim() !== "";
 }
-
-// You should be able to edit a todo in place.
 
 // You should be able to sort the todos after timestamp or author. Timestamp should be the default sorting.
