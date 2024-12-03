@@ -78,6 +78,7 @@ class Task {
     // Remove button
     const removeButton = document.createElement("span");
     removeButton.classList.add("material-symbols-outlined", "remove-task");
+    removeButton.setAttribute("data-tooltip", "Delete this task?");
     removeButton.textContent = "delete";
     removeButton.style.display = "none";
     removeButton.style.color = "red";
