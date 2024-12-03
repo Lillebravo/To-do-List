@@ -166,14 +166,17 @@ class Task {
 function saveTasks() {
   const tasks = Array.from(list.children).map((li) => {
     const taskText = li.querySelector(".task-wrapper span:first-child").textContent;
-    // Extract the original text and author from the displayed text
+    // Extract the original text, author, and timestamp from the displayed text
     const [originalText, authorInfo] = taskText.split(' , By ');
-    const author = authorInfo.split(' on ')[0];
+    const [author, timestampText] = authorInfo.split(' on ');
+    
+    // Parse the existing timestamp
+    const originalTimestamp = new Date(timestampText.replace('.', ':')).getTime();
     
     return { 
       text: originalText, 
-      timestamp: Date.now(), 
-      author: author // Use the original author from the task
+      timestamp: originalTimestamp, // Use the original timestamp
+      author: author
     };
   });
   localStorage.setItem("todos", JSON.stringify(tasks));
@@ -188,6 +191,7 @@ function loadData() {
     list.style.display = "block";
 
     storedTasks.forEach(taskData => {
+      // Use the original timestamp from storage
       const task = new Task(taskData.text, taskData.timestamp, taskData.author);
       list.appendChild(task.element);
     });
