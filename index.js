@@ -26,7 +26,7 @@ addButton.addEventListener("click", () => {
 
 document.addEventListener('DOMContentLoaded', loadData);
 
-// Classes and Functions
+// Classes and methods
 class Task {
   constructor(text, timestamp = Date.now(), author = null) {
     this.text = text;
@@ -59,22 +59,32 @@ class Task {
   }
 
   addOperatingButtons(taskWrapper) {
+    // Checkbox
     const checkBox = document.createElement("input");
     checkBox.setAttribute("type", "checkbox");
     checkBox.classList.add("taskCompleted");
     checkBox.style.display = "none";
 
+    // Remove button
     const removeButton = document.createElement("span");
     removeButton.classList.add("material-symbols-outlined", "remove-task");
     removeButton.textContent = "delete";
     removeButton.style.display = "none";
     removeButton.style.color = "red";
 
+    // Edit button
+    const editButton = document.createElement("span");
+    editButton.classList.add("material-symbols-outlined", "edit-task");
+    editButton.textContent = "edit";
+    editButton.style.display = "none";
+
+    // Move up button
     const moveUpButton = document.createElement("span");
     moveUpButton.classList.add("material-symbols-outlined", "move-up-task");
     moveUpButton.textContent = "arrow_upward";
     moveUpButton.style.display = "none";
 
+    // Move down button
     const moveDownButton = document.createElement("span");
     moveDownButton.classList.add("material-symbols-outlined", "move-down-task");
     moveDownButton.textContent = "arrow_downward";
@@ -82,11 +92,13 @@ class Task {
 
     taskWrapper.appendChild(checkBox);
     taskWrapper.appendChild(removeButton);
+    taskWrapper.appendChild(editButton);
     taskWrapper.appendChild(moveUpButton);
     taskWrapper.appendChild(moveDownButton);
 
     checkBox.addEventListener("click", () => this.completeTask(taskWrapper));
     removeButton.addEventListener("click", () => this.removeTask(taskWrapper));
+    editButton.addEventListener("click", this.editTask(taskWrapper));
     moveUpButton.addEventListener("click", () => this.moveUpTask(taskWrapper));
     moveDownButton.addEventListener("click", () =>
       this.moveDownTask(taskWrapper)
@@ -100,7 +112,7 @@ class Task {
       existingSelectedTask
         .closest(".task-wrapper")
         .querySelectorAll(
-          ".taskCompleted, .remove-task, .move-up-task, .move-down-task"
+          ".taskCompleted, .remove-task, .edit-task, .move-up-task, .move-down-task"
         )
         .forEach((el) => {
           el.style.display = "none";
@@ -110,11 +122,25 @@ class Task {
     taskWrapper.querySelector("span:first-child").classList.add("selectedTask");
     taskWrapper
       .querySelectorAll(
-        ".taskCompleted, .remove-task, .move-up-task, .move-down-task"
+        ".taskCompleted, .remove-task, .edit-task, .move-up-task, .move-down-task"
       )
       .forEach((el) => {
         el.style.display = "inline-block";
       });
+  }
+
+  completeTask(taskWrapper) {
+    const completedTasksList = document.querySelector(".completedTasks");
+
+    completedTasksHeader.style.display = "block";
+    completedTasksList.style.display = "block";
+
+    const completedTask = document.createElement("li");
+    completedTask.textContent = taskWrapper.querySelector("span").textContent;
+    completedTasksList.appendChild(completedTask);
+    
+    this.removeTask(taskWrapper);
+    saveTasks();
   }
 
   removeTask(taskWrapper) {
@@ -125,6 +151,10 @@ class Task {
       document.querySelector("#tasksHeader").style.display = "none";
     }
     saveTasks();
+  }
+
+  editTask(taskWrapper) {
+    
   }
 
   moveUpTask(taskWrapper) {
@@ -147,35 +177,20 @@ class Task {
     }
     saveTasks();
   }
-
-  completeTask(taskWrapper) {
-    const completedTasksList = document.querySelector(".completedTasks");
-
-    completedTasksHeader.style.display = "block";
-    completedTasksList.style.display = "block";
-
-    const completedTask = document.createElement("li");
-    completedTask.textContent = taskWrapper.querySelector("span").textContent;
-    completedTasksList.appendChild(completedTask);
-    
-    this.removeTask(taskWrapper);
-    saveTasks();
-  }
 }
 
+// Functions
 function saveTasks() {
   const tasks = Array.from(list.children).map((li) => {
     const taskText = li.querySelector(".task-wrapper span:first-child").textContent;
-    // Extract the original text, author, and timestamp from the displayed text
     const [originalText, authorInfo] = taskText.split(' , By ');
     const [author, timestampText] = authorInfo.split(' on ');
     
-    // Parse the existing timestamp
     const originalTimestamp = new Date(timestampText.replace('.', ':')).getTime();
     
     return { 
       text: originalText, 
-      timestamp: originalTimestamp, // Use the original timestamp
+      timestamp: originalTimestamp,
       author: author
     };
   });
@@ -191,7 +206,6 @@ function loadData() {
     list.style.display = "block";
 
     storedTasks.forEach(taskData => {
-      // Use the original timestamp from storage
       const task = new Task(taskData.text, taskData.timestamp, taskData.author);
       list.appendChild(task.element);
     });
@@ -234,8 +248,6 @@ function setNewName() {
 function isInputValid(input) {
   return input.value.trim() !== "";
 }
-
-// An author and timestamp should be visible on every todo.
 
 // You should be able to edit a todo in place.
 
