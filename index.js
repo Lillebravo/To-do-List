@@ -213,13 +213,12 @@ function saveTasks() {
     const [originalText, authorInfo] = taskText.split(" , By ");
     const [author, timestampText] = authorInfo.split(" on ");
 
-    const originalTimestamp = new Date(
-      timestampText.replace(".", ":")
-    ).getTime();
+    // More robust timestamp parsing
+    const originalTimestamp = Date.parse(timestampText.replace(".", ":"));
 
     return {
       text: originalText,
-      timestamp: originalTimestamp,
+      timestamp: isNaN(originalTimestamp) ? Date.now() : originalTimestamp,
       author: author,
     };
   });
@@ -235,7 +234,9 @@ function loadData() {
     list.style.display = "block";
 
     storedTasks.forEach((taskData) => {
-      const task = new Task(taskData.text, taskData.timestamp, taskData.author);
+      // Use a more reliable timestamp parsing method
+      const timestamp = taskData.timestamp || Date.now();
+      const task = new Task(taskData.text, timestamp, taskData.author);
       list.appendChild(task.element);
     });
   }
@@ -382,4 +383,4 @@ function isInputDuplicate(input) {
   return isDuplicate;
 }
 
-// Still need to fix the tooltip 
+// Still need to fix the tooltip
