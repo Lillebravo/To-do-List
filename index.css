@@ -7,7 +7,7 @@
   --text-color: #1f2937;
   --accent-color: #6366f1;
   --completed-background: #e6f3ee;
-  --deleteTooltip: "Delete this task?"
+
 }
 
 html {
@@ -153,32 +153,6 @@ button:active {
 }
 
 .taskCompleted:hover::after {
-  opacity: 1;
-  visibility: visible;
-}
-
-.remove-task {
-  position: relative;
-}
-
-.remove-task::after {
-  
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.remove-task:hover::after {
   opacity: 1;
   visibility: visible;
 }

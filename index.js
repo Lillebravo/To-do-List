@@ -213,7 +213,6 @@ function saveTasks() {
     const [originalText, authorInfo] = taskText.split(" , By ");
     const [author, timestampText] = authorInfo.split(" on ");
 
-    // More robust timestamp parsing
     const originalTimestamp = Date.parse(timestampText.replace(".", ":"));
 
     return {
@@ -222,6 +221,7 @@ function saveTasks() {
       author: author,
     };
   });
+
   localStorage.setItem("todos", JSON.stringify(tasks));
 }
 
@@ -234,7 +234,6 @@ function loadData() {
     list.style.display = "block";
 
     storedTasks.forEach((taskData) => {
-      // Use a more reliable timestamp parsing method
       const timestamp = taskData.timestamp || Date.now();
       const task = new Task(taskData.text, timestamp, taskData.author);
       list.appendChild(task.element);
