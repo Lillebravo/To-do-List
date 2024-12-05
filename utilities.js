@@ -32,9 +32,12 @@ export function saveTasks(list) {
     const taskText = li.querySelector(
       ".task-wrapper span:first-child"
     ).textContent;
+
+    // Split the task text to extract original components
     const [originalText, authorInfo] = taskText.split(" , By ");
     const [author, timestampText] = authorInfo.split(" on ");
 
+    // Parse the timestamp directly from the task text
     const originalTimestamp = Date.parse(timestampText.replace(".", ":"));
 
     return {

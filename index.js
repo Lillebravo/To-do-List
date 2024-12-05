@@ -1,13 +1,13 @@
 import { Task } from "./Task.js";
-import { 
-  changeVisibleItems, 
-  setNewName, 
-  loadData, 
+import {
+  changeVisibleItems,
+  setNewName,
+  loadData,
   sortTasks,
   isInputValid,
   isInputDuplicate,
-  saveTasks
-} from './utilities.js';
+  saveTasks,
+} from "./utilities.js";
 
 // Declarations
 let ownerName = document.querySelector("#ownerName");
@@ -46,8 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (storedTasks.length > 0) {
     storedTasks.forEach((taskData) => {
-      const timestamp = taskData.timestamp || Date.now();
-      const task = new Task(taskData.text, timestamp, taskData.author);
+      const timeStamp = taskData.timeStamp || Date.now();
+      const task = new Task(taskData.text, timeStamp, taskData.author);
       list.appendChild(task.element);
     });
   }
