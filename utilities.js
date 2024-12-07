@@ -27,62 +27,91 @@ export function isInputDuplicate(input, list) {
   );
 }
 
-export function saveTasks(list) {
-  const tasks = Array.from(list.children).map((li) => {
-    const taskText = li.querySelector(
-      ".task-wrapper span:first-child"
-    ).textContent;
-
-    // Split the task text to extract original components
-    const [originalText, authorInfo] = taskText.split(" , By ");
-    const [author, timestampText] = authorInfo.split(" on ");
-
-    // Parse the timestamp directly from the task text
-    const originalTimestamp = Date.parse(timestampText.replace(".", ":"));
-
-    return {
-      text: originalText,
-      timestamp: isNaN(originalTimestamp) ? Date.now() : originalTimestamp,
-      author: author,
-    };
-  });
-
-  localStorage.setItem("todos", JSON.stringify(tasks));
-}
-
 export function setNewName(
-  inputName,
-  ownerName,
-  changeNameDiv,
-  changeNameButton
-) {
-  if (inputName.value === ownerName.innerHTML) {
-    alert("That is the same name!");
-    inputName.value = "";
-    changeVisibleItems(changeNameDiv, changeNameButton);
-    return;
+    inputName,
+    ownerName,
+    changeNameDiv,
+    changeNameButton
+  ) {
+    if (inputName.value === ownerName.innerHTML) {
+      alert("That is the same name!");
+      inputName.value = "";
+      changeVisibleItems(changeNameDiv, changeNameButton);
+      return;
+    }
+  
+    if (isInputValid(inputName)) {
+      ownerName.innerHTML = inputName.value;
+      localStorage.setItem("ownerName", ownerName.innerHTML);
+      inputName.value = "";
+      changeVisibleItems(changeNameDiv, changeNameButton);
+    }
   }
 
-  if (isInputValid(inputName)) {
-    ownerName.innerHTML = inputName.value;
-    localStorage.setItem("ownerName", ownerName.innerHTML);
-    inputName.value = "";
-    changeVisibleItems(changeNameDiv, changeNameButton);
+  export function saveTasks(list) {
+    const tasks = Array.from(list.children).map((li) => {
+      const taskText = li.querySelector(
+        ".task-wrapper span:first-child"
+      ).textContent;
+      
+      // Split the task text to extract original components
+      const [originalText, authorInfo] = taskText.split(" , By ");
+      const [author, timestampText] = authorInfo.split(" on ");
+  
+      // Attempt to parse the timestamp in multiple formats
+      let originalTimestamp;
+      try {
+        // Try parsing the timestamp directly
+        originalTimestamp = Date.parse(timestampText.replace(".", ":"));
+        
+        // If parsing fails, try alternative parsing methods
+        if (isNaN(originalTimestamp)) {
+          // Split the timestamp components manually
+          const [datePart, timePart] = timestampText.split(", ");
+          const [year, month, day] = datePart.split("-").map(Number);
+          const [hours, minutes] = timePart.replace(".", ":").split(":").map(Number);
+          
+          // Create a new Date object with parsed components
+          originalTimestamp = new Date(year, month - 1, day, hours, minutes).getTime();
+        }
+      } catch (error) {
+        // Fallback to current timestamp if all parsing methods fail
+        originalTimestamp = Date.now();
+      }
+  
+      return {
+        text: originalText,
+        timestamp: originalTimestamp || Date.now(),
+        author: author,
+      };
+    });
+  
+    localStorage.setItem("todos", JSON.stringify(tasks));
   }
-}
 
-export function loadData(ownerName, tasksHeader, list) {
-  ownerName.innerHTML = localStorage.getItem("ownerName") || "No-one";
-  const storedTasks = JSON.parse(localStorage.getItem("todos") || "[]");
-
-  if (storedTasks.length > 0) {
-    tasksHeader.style.display = "block";
-    list.style.display = "block";
-
-    return storedTasks;
+  export function loadData(ownerName, tasksHeader, list) {
+    ownerName.innerHTML = localStorage.getItem("ownerName") || "No-one";
+    const storedTasks = JSON.parse(localStorage.getItem("todos") || "[]");
+  
+    if (storedTasks.length > 0) {
+      tasksHeader.style.display = "block";
+      list.style.display = "block";
+  
+      return storedTasks.map(taskData => {
+        // Ensure timestamp is a valid number
+        const timestamp = typeof taskData.timestamp === 'number' 
+          ? taskData.timestamp 
+          : (Date.parse(taskData.timestamp) || Date.now());
+  
+        return {
+          text: taskData.text,
+          timestamp: timestamp,
+          author: taskData.author
+        };
+      });
+    }
+    return [];
   }
-  return [];
-}
 
 export function sortTasks(list, selectedSort) {
   const tasks = Array.from(list.children);

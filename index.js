@@ -17,14 +17,10 @@ const saveNameButton = document.querySelector("#saveName");
 const addButton = document.querySelector("#addButton");
 const list = document.querySelector(".listOfTasks");
 const tasksHeader = document.querySelector("#tasksHeader");
-const completedTasksHeader = document.querySelector("#completedTasksHeader");
 const sortButton = document.querySelector("#sortButton");
 const inputTask = document.querySelector("#inputTask");
 const inputName = document.querySelector("#inputName");
 const sortSelector = document.querySelector("#sortSelector");
-
-tasksHeader.style.display = "none";
-let selectedTask = null;
 
 // Event Listeners
 changeNameButton.addEventListener("click", () => {
@@ -46,8 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (storedTasks.length > 0) {
     storedTasks.forEach((taskData) => {
-      const timeStamp = taskData.timeStamp || Date.now();
-      const task = new Task(taskData.text, timeStamp, taskData.author);
+      const task = new Task(taskData.text, taskData.timestamp, taskData.author);
       list.appendChild(task.element);
     });
   }
