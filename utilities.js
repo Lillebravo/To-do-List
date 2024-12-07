@@ -58,24 +58,27 @@ export function setNewName(
       const [originalText, authorInfo] = taskText.split(" , By ");
       const [author, timestampText] = authorInfo.split(" on ");
   
-      // Attempt to parse the timestamp in multiple formats
+      // Create a more Chrome-friendly parsing method
       let originalTimestamp;
       try {
-        // Try parsing the timestamp directly
-        originalTimestamp = Date.parse(timestampText.replace(".", ":"));
+        // Reconstruct a standard ISO-like format that might work for Chrome, it didnt...
+        // Format: YYYY-MM-DD, HH:mm
+        const [datePart, timePart] = timestampText.split(", ");
+        const formattedTimestamp = `${datePart}T${timePart.replace(".", ":")}:00`;
         
-        // If parsing fails, try alternative parsing methods
+        // Use Date.parse with a standardized format
+        originalTimestamp = Date.parse(formattedTimestamp);
+        
+        // Fallback mechanisms
         if (isNaN(originalTimestamp)) {
-          // Split the timestamp components manually
-          const [datePart, timePart] = timestampText.split(", ");
+          // Alternative parsing methods
           const [year, month, day] = datePart.split("-").map(Number);
           const [hours, minutes] = timePart.replace(".", ":").split(":").map(Number);
           
-          // Create a new Date object with parsed components
           originalTimestamp = new Date(year, month - 1, day, hours, minutes).getTime();
         }
       } catch (error) {
-        // Fallback to current timestamp if all parsing methods fail
+        // Ultimate fallback
         originalTimestamp = Date.now();
       }
   
